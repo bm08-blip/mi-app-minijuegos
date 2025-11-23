@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>Mini Juegos</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        text-align: center;
+        background:#f8f8f8;
+        margin: 0;
+        padding: 0;
+    }
+    #container {
+        margin: 20px auto;
+        max-width: 400px;
+        padding: 20px;
+        border-radius: 10px;
+        background:white;
+        box-shadow:0 0 10px rgba(0,0,0,0.1);
+    }
+    button {
+        margin: 10px;
+        padding: 12px 18px;
+        border: none;
+        border-radius: 6px;
+        cursor: pointer;
+        background: #4CAF50;
+        color: white;
+        font-size: 16px;
+    }
+    button:hover { background:#45A049; }
+
+    .hidden { display:none; }
+
+    .option-btn {
+        background:#2196F3;
+    }
+    .option-btn:hover {
+        background:#0b7dda;
+    }
+</style>
+</head>
+<body>
+
+<div id="container">
+
+    <!-- MENÚ PRINCIPAL -->
+    <div id="menu">
+        <h2>🎮 Mini Juegos</h2>
+        <p>Selecciona un juego:</p>
+        <button onclick="showGame('clicker')">Juego de Clicks</button>
+        <button onclick="showGame('ppt')">Piedra, Papel o Tijera</button>
+        <button onclick="showGame('adivina')">Adivina el Número</button>
+    </div>
+
+    <!-- JUEGO 1: CLICKER CON TIEMPO -->
+    <div id="clicker" class="hidden">
+        <h2>Juego de Clicks</h2>
+
+        <p>Tiempo: <span id="tiempo">10</span> segundos</p>
+        <p>Clicks: <span id="clickCount">0</span></p>
+
+        <button id="btnClick" onclick="sumarClick()" disabled>Haz click aquí</button>
+
+        <br><br>
+        <button onclick="iniciarClicker()">Iniciar</button>
+        <button onclick="volverMenu()">Volver al menú</button>
+    </div>
+
+    <!-- JUEGO 2: PIEDRA PAPEL TIJERA -->
+    <div id="ppt" class="hidden">
+        <h2>Piedra, Papel o Tijera</h2>
+        <p>Elige tu opción:</p>
+        <button class="option-btn" onclick="jugarPPT('piedra')">🪨 Piedra</button>
+        <button class="option-btn" onclick="jugarPPT('papel')">📄 Papel</button>
+        <button class="option-btn" onclick="jugarPPT('tijera')">✂️ Tijera</button>
+        <p id="pptResultado"></p>
+        <br>
+        <button onclick="volverMenu()">Volver al menú</button>
+    </div>
+
+    <!-- JUEGO 3: ADIVINA EL NÚMERO -->
+    <div id="adivina" class="hidden">
+        <h2>Adivina el Número</h2>
+        <p>Estoy pensando un número entre 1 y 20</p>
+        <input type="number" id="numInput" placeholder="Tu intento">
+        <button onclick="adivinar()">Probar</button>
+        <p id="respuesta"></p>
+        <br>
+        <button onclick="volverMenu()">Volver al menú</button>
+    </div>
+
+</div>
+
+<script>
+    /* CAMBIO DE PANTALLAS */
+    function showGame(gameId) {
+        document.querySelectorAll("#container > div").forEach(div => {
+            div.classList.add("hidden");
+        });
+        document.getElementById(gameId).classList.remove("hidden");
+    }
+
+    function volverMenu() {
+        document.querySelectorAll("#container > div").forEach(div => {
+            div.classList.add("hidden");
+        });
+        document.getElementById("menu").classList.remove("hidden");
+    }
+
+    /* JUEGO 1: CLICKER CON TIEMPO */
+    let clicks = 0;
+    let tiempo = 10;
+    let intervalo;
+
+    function iniciarClicker() {
+        clicks = 0;
+        tiempo = 10;
+        document.getElementById("clickCount").textContent = clicks;
+        document.getElementById("tiempo").textContent = tiempo;
+
+        document.getElementById("btnClick").disabled = false;
+
+        clearInterval(intervalo);
+
+        intervalo = setInterval(() => {
+            tiempo--;
+            document.getElementById("tiempo").textContent = tiempo;
+
+            if (tiempo === 0) {
+                clearInterval(intervalo);
+                document.getElementById("btnClick").disabled = true;
+                alert("¡Tiempo terminado! Hiciste " + clicks + " clicks.");
+            }
+        }, 1000);
+    }
+
+    function sumarClick() {
+        clicks++;
+        document.getElementById("clickCount").textContent = clicks;
+    }
+
+    /* JUEGO 2: PIEDRA PAPEL TIJERA */
+    function jugarPPT(usuario) {
+        const opciones = ["piedra","papel","tijera"];
+        const compu = opciones[Math.floor(Math.random()*3)];
+
+        let resultado = "";
+        if (usuario === compu) resultado = "Empate 😐";
+        else if (
+            (usuario === "piedra" && compu === "tijera") ||
+            (usuario === "papel" && compu === "piedra") ||
+            (usuario === "tijera" && compu === "papel")
+        ) resultado = "¡Ganaste! 🎉";
+        else resultado = "Perdiste 😢";
+
+        document.getElementById("pptResultado").textContent =
+            "Tú: " + usuario + " | Compu: " + compu + " → " + resultado;
+    }
+
+    /* JUEGO 3: ADIVINA EL NÚMERO */
+    let secreto = Math.floor(Math.random()*20)+1;
+
+    function adivinar() {
+        const intento = Number(document.getElementById("numInput").value);
+
+        if (!intento) {
+            document.getElementById("respuesta").textContent = "Escribe un número válido";
+            return;
+        }
+
+        if (intento === secreto) {
+            document.getElementById("respuesta").textContent = "¡Correcto! 🎉 Era " + secreto;
+            secreto = Math.floor(Math.random()*20)+1;
+        } else if (intento < secreto) {
+            document.getElementById("respuesta").textContent = "Muy bajo ⬇️";
+        } else {
+            document.getElementById("respuesta").textContent = "Muy alto ⬆️";
+        }
+    }
+</script>
+
+</body>
+</html
